@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<!-- handmade: hand-tuned deck -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Blaster — Plugin Store promos</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #120C0B;
+    --ink-light: #1E1413;
+    --ink-lighter: #3A1E1C;
+    --accent: #C62D25;
+    --accent-light: #E25750;
+    --sky: #F49E9A;
+    --green: #4ade80;
+    --off-white: #f1f5f9;
+  }
+
+  html { background: #000; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--off-white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- slide shell ---------------------------------------------------- */
+  .slide {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 85% 15%, rgba(198, 45, 37, 0.30) 0%, transparent 40%),
+      radial-gradient(ellipse at 65% 5%,  rgba(226, 87, 80, 0.13) 0%, transparent 35%),
+      radial-gradient(ellipse at 15% 85%, rgba(244, 158, 154, 0.07) 0%, transparent 40%),
+      radial-gradient(ellipse at 35% 95%, rgba(198, 45, 37, 0.10) 0%, transparent 35%),
+      linear-gradient(135deg, #120C0B 0%, #1E1413 30%, #2A1817 60%, #120C0B 100%);
+  }
+
+  /* Oversized watermark, echoing the app icon.
+
+     Smaller and pulled further onto the slide than the megaphone deck's 1180px at -12%/-13%.
+     The gun is a wide, short shape, so that crop cut the grip off the left edge and left the
+     barrel ridges floating — legible as *something*, not as a ray gun. At 900px from top 2% /
+     left -4% the whole mark is on the slide: fin, grip, trigger guard, barrel and muzzle. */
+  .slide::after {
+    content: '';
+    position: absolute;
+    top: 2%;
+    left: -4%;
+    width: 900px;
+    height: 900px;
+    background: url('assets/watermark.svg') no-repeat center / contain;
+    opacity: 0.05;
+    pointer-events: none;
+  }
+
+  /* Hairline along the top edge — a bar at the top of the page, which is the whole product */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--sky), var(--accent));
+    z-index: 5;
+  }
+
+  .inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 118px 130px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* ---- type ------------------------------------------------------------ */
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(241, 245, 249, 0.62);
+    margin-bottom: 34px;
+  }
+  .eyebrow .rule {
+    width: 58px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--accent-light);
+  }
+
+  h1, h2 {
+    font-family: 'Jersey 20', sans-serif;
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: 0.005em;
+  }
+
+  .gradient-text {
+    background: linear-gradient(100deg, #C62D25 0%, #E25750 34%, #F49E9A 66%, #C62D25 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .lede {
+    font-size: 34px;
+    line-height: 1.5;
+    color: rgba(241, 245, 249, 0.72);
+  }
+
+  .mono {
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  /* ---- cover slide ----------------------------------------------------- */
+  .cover .inner { gap: 90px; }
+  .cover .copy { flex: 1 1 auto; }
+  .cover h1 { font-size: 320px; margin-bottom: 18px; }
+  .cover .tagline {
+    font-family: 'Jersey 20', sans-serif;
+    font-size: 60px;
+    line-height: 1.02;
+    color: var(--off-white);
+    margin-bottom: 40px;
+    max-width: 15ch;
+  }
+  .cover .lede { max-width: 34ch; font-size: 30px; }
+
+  .cover .mark {
+    flex: 0 0 auto;
+    width: 460px;
+    height: 460px;
+    filter: drop-shadow(14px 14px 0 rgba(0, 0, 0, 0.35));
+  }
+  .cover .mark img { width: 100%; height: 100%; display: block; }
+
+  .badges { display: flex; gap: 16px; margin-top: 52px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 26px;
+    font-size: 22px;
+    font-weight: 500;
+    color: rgba(241, 245, 249, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+  }
+  .badge .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent-light);
+  }
+  .badge.price .dot { background: var(--sky); }
+
+  /* ---- the server/browser statement ------------------------------------ */
+  .statement .inner { flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .statement .eyebrow { justify-content: center; }
+  .swap { display: flex; flex-direction: column; align-items: center; gap: 22px; margin-top: 8px; }
+  .swap .caption {
+    font-size: 26px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(241, 245, 249, 0.42);
+  }
+  .swap .before {
+    font-size: 44px;
+    white-space: nowrap;
+    color: rgba(241, 245, 249, 0.34);
+    letter-spacing: 0.01em;
+  }
+  .swap .arrow {
+    width: 4px;
+    height: 62px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(226, 87, 80, 0.15), var(--accent-light));
+    position: relative;
+  }
+  .swap .arrow::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -4px;
+    width: 18px; height: 18px;
+    transform: translateX(-50%) rotate(45deg);
+    border-right: 4px solid var(--accent-light);
+    border-bottom: 4px solid var(--accent-light);
+    border-radius: 2px;
+  }
+  /* Longer than Bed's one-liner: at 70px this ran the full 1920 and touched both edges. */
+  .swap .after {
+    font-size: 54px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .statement .lede { margin-top: 40px; max-width: 44ch; font-size: 32px; }
+
+  /* ---- feature slides -------------------------------------------------- */
+  .feature .inner { align-items: center; }
+  .feature .copy { width: 780px; flex: 0 0 780px; }
+  .feature h2 { font-size: 108px; margin-bottom: 30px; }
+  .feature .lede { max-width: 21ch; }
+
+  .points {
+    list-style: none;
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 25px;
+    line-height: 1.4;
+    color: rgba(241, 245, 249, 0.6);
+  }
+  .points li .tick {
+    flex: 0 0 auto;
+    margin-top: 9px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent-light);
+  }
+  /* The li is a flex container, so an inline <span class="mono"> or <em> left loose in the
+     text becomes a sibling flex item and picks up the 16px gap on both sides. Every point
+     keeps its text in one .t. */
+  .points li .t { flex: 1 1 auto; }
+
+  /* Right-hand panel shared by the targeting, candidates, version and shelf slides */
+  .panel {
+    position: absolute;
+    top: 50%;
+    left: 900px;
+    right: 130px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* ---- rows: targeting conditions, and candidate bars ------------------- */
+  .rows { display: flex; flex-direction: column; gap: 15px; }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    padding: 24px 32px;
+    border-radius: 16px;
+    background: rgba(58, 30, 28, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .row .pos { flex: 0 0 62px; font-size: 24px; color: rgba(241, 245, 249, 0.3); }
+  .row .what { flex: 1 1 auto; font-size: 25px; color: rgba(241, 245, 249, 0.78); white-space: nowrap; }
+  .row .state {
+    flex: 0 0 auto;
+    font-size: 19px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(241, 245, 249, 0.4);
+  }
+  /* The winner, and the server half */
+  .row.eager { border-color: rgba(226, 87, 80, 0.5); background: rgba(198, 45, 37, 0.2); }
+  .row.eager .what { color: var(--off-white); font-weight: 600; }
+  .row.eager .state { color: var(--accent-light); }
+  /* Decided in the browser, and the bars that did not get the position */
+  .row.lifted { border-style: dashed; border-color: rgba(244, 158, 154, 0.34); }
+  .row.lifted .state { color: var(--sky); }
+  .row.held .what { color: rgba(241, 245, 249, 0.42); }
+
+  .rows .divider {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 8px 4px 2px;
+    font-size: 19px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(241, 245, 249, 0.3);
+  }
+  .rows .divider::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.09);
+  }
+
+  /* ---- the before/after comparison -------------------------------------- */
+  .weigh { display: flex; flex-direction: column; gap: 24px; }
+  .side {
+    padding: 40px 40px;
+    border-radius: 18px;
+    background: rgba(58, 30, 28, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .side .chip {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 18px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(241, 245, 249, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .side .where { font-size: 32px; font-weight: 600; color: var(--off-white); margin-bottom: 16px; }
+  .side .what { font-size: 23px; line-height: 1.5; color: rgba(241, 245, 249, 0.5); }
+  .side.after { border-color: rgba(226, 87, 80, 0.5); background: rgba(198, 45, 37, 0.18); }
+  .side.after .chip { color: var(--accent-light); background: rgba(198, 45, 37, 0.3); }
+  .side.after .what { color: rgba(241, 245, 249, 0.66); }
+
+  /* ---- the capability shelf ---------------------------------------------- */
+  .shelf { display: flex; flex-wrap: wrap; gap: 14px; }
+  .name {
+    padding: 15px 24px;
+    border-radius: 12px;
+    font-size: 25px;
+    color: rgba(241, 245, 249, 0.62);
+    background: rgba(58, 30, 28, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .name.client { border-style: dashed; color: var(--sky); }
+  .name.more { color: rgba(241, 245, 249, 0.3); border-color: transparent; background: none; }
+
+  /* ---- terminal --------------------------------------------------------- */
+  .term {
+    position: absolute;
+    top: 50%;
+    left: 900px;
+    right: -110px;
+    transform: translateY(-50%);
+    border-radius: 14px; overflow: hidden; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.08); }
+  .term .chrome {
+    height: 44px;
+    background: #3A211F;
+    background-image:
+      radial-gradient(circle at 26px 22px, #ff5f57 6.5px, transparent 7px),
+      radial-gradient(circle at 52px 22px, #ffbd2e 6.5px, transparent 7px),
+      radial-gradient(circle at 78px 22px, #28ca42 6.5px, transparent 7px);
+  }
+  .term .body {
+    background: #0B0706;
+    padding: 40px 44px;
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 22px;
+    line-height: 1.95;
+    white-space: pre;
+  }
+  .term .prompt { color: var(--accent-light); }
+  .term .cmd { color: var(--off-white); }
+  .term .out { color: rgba(241, 245, 249, 0.45); }
+  .term .head { color: rgba(241, 245, 249, 0.28); }
+  .term .ok { color: var(--green); }
+  .term .warn { color: var(--sky); }
+  .term .blank { display: block; height: 20px; }
+
+  /* ---- footer lockup --------------------------------------------------- */
+  .footer {
+    position: absolute;
+    left: 130px;
+    bottom: 62px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    color: rgba(241, 245, 249, 0.4);
+  }
+  .footer img { width: 40px; height: 40px; border-radius: 9px; }
+  .footer b { color: rgba(241, 245, 249, 0.72); font-weight: 600; }
+
+  /* Only render the requested slide when screenshotting */
+  body.single .slide { display: none; }
+  body.single .slide.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- 1 · Cover ============================================================ -->
+<section class="slide cover" data-n="1">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Craft CMS 5</div>
+      <h1 class="gradient-text">Blaster</h1>
+      <p class="tagline">Say it at the top of the&nbsp;page.</p>
+      <p class="lede">Notification bars that are written in the control panel, targeted at the
+        people who should see them, scheduled for when they matter — and never in a template.</p>
+      <div class="badges">
+        <span class="badge price"><span class="dot"></span> Free &nbsp;·&nbsp; no editions</span>
+        <span class="badge">Craft 5.3+ · PHP 8.2+ · no dependencies</span>
+      </div>
+    </div>
+    <div class="mark"><img src="assets/icon.svg" alt=""></div>
+  </div>
+</section>
+
+<!-- 2 · The split ======================================================== -->
+<section class="slide statement" data-n="2">
+  <div class="inner">
+    <div class="eyebrow"><span class="rule"></span> The whole idea</div>
+    <div class="swap">
+      <span class="caption">On a phone? Arrived from Google? Closed it on Tuesday?</span>
+      <span class="before mono">if ($visitor->…)&nbsp; /* on the server */</span>
+      <span class="arrow"></span>
+      <span class="caption">Blaster never asks the server that.</span>
+      <span class="after mono gradient-text">data-blaster-config&nbsp; /* in the browser */</span>
+    </div>
+    <p class="lede">Anything that varies per <em>visitor</em> rather than per <em>request</em>
+      cannot be decided on the server without either defeating your page cache or keeping a record
+      of the person. So the server sends every bar that could apply, hidden, and the browser picks
+      the one that wins.</p>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Blaster</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-blaster</div>
+</section>
+
+<!-- 3 · Targeting ======================================================== -->
+<section class="slide feature" data-n="3">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Targeting</div>
+      <h2>Two halves,<br>one decision</h2>
+      <p class="lede">Where a condition is decided is not an implementation detail.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">Fail a server rule and the bar never reaches the page at all</span></li>
+        <li><span class="tick"></span><span class="t">The browser half is settled after the cached page lands</span></li>
+        <li><span class="tick"></span><span class="t">Which is why nothing about a visitor is stored on your server</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="rows">
+      <div class="row eager"><span class="what mono">blog/*&nbsp; ·&nbsp; except blog/drafts/*</span><span class="state">Server</span></div>
+      <div class="row eager"><span class="what">Section &nbsp;·&nbsp; Products</span><span class="state">Server</span></div>
+      <div class="row eager"><span class="what">Signed-out visitors only</span><span class="state">Server</span></div>
+      <div class="row eager"><span class="what mono">?utm_source=newsletter</span><span class="state">Server</span></div>
+      <div class="row lifted"><span class="what">Viewport under 640px</span><span class="state">Browser</span></div>
+      <div class="row lifted"><span class="what">Arrived from a search engine</span><span class="state">Browser</span></div>
+      <div class="row lifted"><span class="what">First visit, not a return</span><span class="state">Browser</span></div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Blaster</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-blaster</div>
+</section>
+
+<!-- 4 · One per position ================================================= -->
+<section class="slide feature" data-n="4">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Priority</div>
+      <h2>One bar,<br>one position</h2>
+      <p class="lede">Two stacked announcements are not twice the message. They are half the
+        attention each.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">Every candidate is sent hidden; top priority takes the spot</span></li>
+        <li><span class="tick"></span><span class="t">Top and bottom are scored apart, so each gets its own winner</span></li>
+        <li><span class="tick"></span><span class="t">Sorted on the server, so the browser only has to agree</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="rows">
+      <div class="divider">Top</div>
+      <div class="row eager"><span class="pos mono">20</span><span class="what">Free shipping over $75</span><span class="state">Shown</span></div>
+      <div class="row held"><span class="pos mono">10</span><span class="what">Cookie notice</span><span class="state">Held</span></div>
+      <div class="row held"><span class="pos mono">0</span><span class="what">Summer sale</span><span class="state">Held</span></div>
+      <div class="divider">Bottom</div>
+      <div class="row eager"><span class="pos mono">5</span><span class="what">We’re hiring — three roles open</span><span class="state">Shown</span></div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Blaster</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-blaster</div>
+</section>
+
+<!-- 5 · Version-keyed dismissal ========================================== -->
+<section class="slide feature" data-n="5">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Dismissal</div>
+      <h2>Editing it<br>brings it back</h2>
+      <p class="lede">Editing a bar is how you say “this is a new thing to say”.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">Every save bumps the bar’s version</span></li>
+        <li><span class="tick"></span><span class="t">A dismissal is recorded against the version it dismissed</span></li>
+        <li><span class="tick"></span><span class="t">So an edit re-shows it to everyone who closed the old one</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="weigh">
+      <div class="side">
+        <span class="chip">Before the edit</span>
+        <div class="where">Version 4 &nbsp;·&nbsp; dismissed</div>
+        <div class="what">Closed on a Tuesday, remembered for seven days, and gone from that
+          visitor’s pages until the following week.</div>
+      </div>
+      <div class="side after">
+        <span class="chip">After the edit</span>
+        <div class="where">Version 5 &nbsp;·&nbsp; shown again</div>
+        <div class="what">The stored dismissal is cleared along with the view count. A stale
+          dismissal quietly suppressing a new announcement is the failure nobody notices until the
+          announcement matters.</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Blaster</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-blaster</div>
+</section>
+
+<!-- 6 · Everything switched on =========================================== -->
+<section class="slide feature" data-n="6">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> One edition</div>
+      <h2>All of it,<br>at no cost</h2>
+      <p class="lede">There is no paid tier, so there is nothing being held back for one.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">Scheduling, targeting and statistics included, not upsold</span></li>
+        <li><span class="tick"></span><span class="t">Highlighted ones are decided in the browser, not the server</span></li>
+        <li><span class="tick"></span><span class="t">And per-bar CSS with a <span class="mono">{selector}</span> token, for everything else</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="shelf">
+      <span class="name">Top</span><span class="name">Bottom</span><span class="name">Sticky</span>
+      <span class="name">Push page down</span><span class="name">Delay</span>
+      <span class="name">Scroll depth</span><span class="name">Exit intent</span>
+      <span class="name">Auto-close</span><span class="name">Start &amp; end dates</span>
+      <span class="name">Days of week</span><span class="name">Daily window</span>
+      <span class="name">URI patterns</span><span class="name">Sections</span>
+      <span class="name">Entries</span><span class="name">User groups</span>
+      <span class="name">Sites</span><span class="name">Query string</span>
+      <span class="name">Priority</span><span class="name">Per-site wording</span>
+      <span class="name">Live preview</span><span class="name">Custom CSS</span>
+      <span class="name client">Device width</span><span class="name client">Referrer</span>
+      <span class="name client">First visit</span><span class="name client">View cap</span>
+      <span class="name client">Reopen tab</span><span class="name client">Dismissal window</span>
+      <span class="name more">+ nothing held back</span>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Blaster</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-blaster</div>
+</section>
+
+<!-- 7 · The numbers ====================================================== -->
+<section class="slide feature" data-n="7">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> The numbers</div>
+      <h2>Counts that<br>describe nobody</h2>
+      <p class="lede">Three integers per bar, per site, per day. That is the whole record.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">No event rows, no identifiers, no addresses, no sessions</span></li>
+        <li><span class="tick"></span><span class="t">Which answers how many <em>times</em>, and never how many <em>people</em></span></li>
+        <li><span class="tick"></span><span class="t">For a notification bar, that is the right way round</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="term">
+    <div class="chrome"></div>
+    <div class="body"><div><span class="prompt">$</span> <span class="cmd">php craft blaster/bars/list</span></div><div class="head">  HANDLE           POSITION  STATUS    PRI   VIEWS   CLICKS   CTR</div><div class="out">  free-shipping    top       <span class="ok">live</span>       20  18,204    1,447  <span class="warn">7.9%</span></div><div class="out">  cookie-notice    top       <span class="ok">live</span>       10  22,981      310  1.3%</div><div class="out">  summer-sale      top       expired     0  41,663    3,902  <span class="warn">9.4%</span></div><div class="out">  were-hiring      bottom    <span class="ok">live</span>        5   9,120      288  3.2%</div><span class="blank"></span><div><span class="prompt">$</span> <span class="cmd">php craft blaster/stats/prune --days=90</span></div><div class="out">  Pruned 1,284 daily rows.</div></div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Blaster</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-blaster</div>
+</section>
+
+<script>
+  var n = new URLSearchParams(location.search).get('s');
+  if (n) {
+    document.body.classList.add('single');
+    var el = document.querySelector('.slide[data-n="' + n + '"]');
+    if (el) el.classList.add('active');
+  }
+</script>
+</body>
+</html>

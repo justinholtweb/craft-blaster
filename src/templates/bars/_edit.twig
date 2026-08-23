@@ -1,0 +1,637 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+{% do view.registerAssetBundle("justinholtweb\\blaster\\web\\assets\\cp\\CpAsset") %}
+
+{% set fullPageForm = canManage %}
+{% set selectedSubnavItem = 'bars' %}
+
+{% set crumbs = [
+    { label: "Blaster"|t('blaster'), url: url('blaster/bars') },
+    { label: "Bars"|t('blaster'), url: url('blaster/bars') },
+] %}
+
+{% set tabs = {
+    barMessage: { label: "Message"|t('blaster'), url: '#barMessage' },
+    barAppearance: { label: "Appearance"|t('blaster'), url: '#barAppearance' },
+    barDisplay: { label: "Display"|t('blaster'), url: '#barDisplay' },
+    barTargeting: { label: "Targeting"|t('blaster'), url: '#barTargeting' },
+    barSchedule: { label: "Schedule"|t('blaster'), url: '#barSchedule' },
+} %}
+
+{% set display = bar.display %}
+{% set targeting = bar.targeting %}
+{% set schedule = bar.schedule %}
+{% set theme = bar.theme %}
+{% set content = bar.content %}
+
+{% block actionButton %}
+    {% if canManage %}
+        <div class="btngroup">
+            <button type="submit" class="btn submit">{{ "Save"|t('app') }}</button>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <input type="hidden" name="action" value="blaster/bars/save">
+    <input type="hidden" name="barId" value="{{ bar.id }}">
+    <input type="hidden" name="siteId" value="{{ site.id }}">
+    {{ redirectInput('blaster/bars/{id}') }}
+
+    {# The whole editor is one element so the preview can post it verbatim. #}
+    <div id="blaster-bar-form">
+
+        {# ------------------------------------------------------------------ preview #}
+        <div class="blaster-preview-pane">
+            <div class="blaster-preview-pane__label">{{ "Preview"|t('blaster') }}</div>
+            <div id="blaster-preview"></div>
+        </div>
+
+        {# ------------------------------------------------------------------ message #}
+        <div id="barMessage">
+            {{ forms.textField({
+                label: "Name"|t('blaster'),
+                instructions: "What this bar is for. Only ever seen in the control panel."|t('blaster'),
+                id: 'title',
+                name: 'title',
+                value: bar.title,
+                required: true,
+                errors: bar.getErrors('title'),
+            }) }}
+
+            {{ forms.textField({
+                label: "Handle"|t('blaster'),
+                instructions: "Used by `{{ craft.blaster.bar('…') }}`, and by the browser to remember a dismissal. Changing it forgets every dismissal of this bar."|t('blaster'),
+                id: 'handle',
+                name: 'handle',
+                value: bar.handle,
+                class: 'code',
+                placeholder: "Generated from the name"|t('blaster'),
+                errors: bar.getErrors('handle'),
+            }) }}
+
+            {{ forms.textareaField({
+                label: "Message"|t('blaster'),
+                instructions: "Shown to visitors. A little HTML is allowed — links, emphasis, line breaks — and everything else is stripped when you save."|t('blaster'),
+                id: 'content-message',
+                name: 'content[message]',
+                value: content.message,
+                rows: 4,
+                errors: bar.getErrors('content.message'),
+            }) }}
+
+            <hr>
+
+            {{ forms.lightswitchField({
+                label: "Add a button"|t('blaster'),
+                id: 'content-buttonEnabled',
+                name: 'content[buttonEnabled]',
+                on: content.buttonEnabled,
+            }) }}
+
+            <div data-when="content[buttonEnabled]" data-is="1">
+                {{ forms.textField({
+                    label: "Button label"|t('blaster'),
+                    id: 'content-buttonLabel',
+                    name: 'content[buttonLabel]',
+                    value: content.buttonLabel,
+                    errors: bar.getErrors('content.buttonLabel'),
+                }) }}
+
+                {{ forms.textField({
+                    label: "Button link"|t('blaster'),
+                    instructions: "A URL, a path, or an anchor. Schemes that execute are refused."|t('blaster'),
+                    id: 'content-buttonUrl',
+                    name: 'content[buttonUrl]',
+                    value: content.buttonUrl,
+                    class: 'code',
+                    errors: bar.getErrors('content.buttonUrl'),
+                }) }}
+
+                {{ forms.lightswitchField({
+                    label: "Open in a new tab"|t('blaster'),
+                    id: 'content-buttonNewWindow',
+                    name: 'content[buttonNewWindow]',
+                    on: content.buttonNewWindow,
+                }) }}
+            </div>
+        </div>
+
+        {# ------------------------------------------------------------------ appearance #}
+        <div id="barAppearance" class="hidden">
+            {{ forms.selectField({
+                label: "Position"|t('blaster'),
+                id: 'position',
+                name: 'position',
+                options: [
+                    { label: "Top of the page"|t('blaster'), value: 'top' },
+                    { label: "Bottom of the page"|t('blaster'), value: 'bottom' },
+                ],
+                value: bar.position,
+            }) }}
+
+            <div class="flex">
+                {{ forms.colorField({ label: "Background"|t('blaster'), id: 'theme-background', name: 'theme[background]', value: theme.background, errors: bar.getErrors('theme.background') }) }}
+                {{ forms.colorField({ label: "Text"|t('blaster'), id: 'theme-text', name: 'theme[text]', value: theme.text, errors: bar.getErrors('theme.text') }) }}
+                {{ forms.colorField({ label: "Links"|t('blaster'), id: 'theme-link', name: 'theme[link]', value: theme.link, errors: bar.getErrors('theme.link') }) }}
+                {{ forms.colorField({ label: "Close button"|t('blaster'), id: 'theme-closeColor', name: 'theme[closeColor]', value: theme.closeColor, errors: bar.getErrors('theme.closeColor') }) }}
+            </div>
+
+            <div class="flex">
+                {{ forms.colorField({ label: "Button background"|t('blaster'), id: 'theme-buttonBackground', name: 'theme[buttonBackground]', value: theme.buttonBackground, errors: bar.getErrors('theme.buttonBackground') }) }}
+                {{ forms.colorField({ label: "Button text"|t('blaster'), id: 'theme-buttonText', name: 'theme[buttonText]', value: theme.buttonText, errors: bar.getErrors('theme.buttonText') }) }}
+                {{ forms.textField({ label: "Button corners"|t('blaster'), id: 'theme-buttonRadius', name: 'theme[buttonRadius]', value: theme.buttonRadius, type: 'number', size: 5, unit: 'px' }) }}
+            </div>
+
+            <hr>
+
+            <div class="flex">
+                {{ forms.textField({ label: "Type size"|t('blaster'), id: 'theme-fontSize', name: 'theme[fontSize]', value: theme.fontSize, type: 'number', size: 5, unit: 'px', errors: bar.getErrors('theme.fontSize') }) }}
+                {{ forms.textField({ label: "Minimum height"|t('blaster'), instructions: "`0` lets the message decide."|t('blaster'), id: 'theme-minHeight', name: 'theme[minHeight]', value: theme.minHeight, type: 'number', size: 5, unit: 'px' }) }}
+            </div>
+
+            {{ forms.selectField({
+                label: "Alignment"|t('blaster'),
+                id: 'theme-align',
+                name: 'theme[align]',
+                options: [
+                    { label: "Left"|t('blaster'), value: 'left' },
+                    { label: "Centre"|t('blaster'), value: 'center' },
+                    { label: "Right"|t('blaster'), value: 'right' },
+                ],
+                value: theme.align,
+            }) }}
+
+            {{ forms.selectField({
+                label: "Content width"|t('blaster'),
+                id: 'theme-width',
+                name: 'theme[width]',
+                options: [
+                    { label: "Full width"|t('blaster'), value: 'full' },
+                    { label: "Contained"|t('blaster'), value: 'contained' },
+                ],
+                value: theme.width,
+            }) }}
+
+            <div data-when="theme[width]" data-is="contained">
+                {{ forms.textField({ label: "Maximum width"|t('blaster'), id: 'theme-maxWidth', name: 'theme[maxWidth]', value: theme.maxWidth, type: 'number', size: 6, unit: 'px', errors: bar.getErrors('theme.maxWidth') }) }}
+            </div>
+
+            <hr>
+
+            <div class="flex">
+                {{ forms.textField({ label: "Border"|t('blaster'), instructions: "On the edge facing the page."|t('blaster'), id: 'theme-borderWidth', name: 'theme[borderWidth]', value: theme.borderWidth, type: 'number', size: 5, unit: 'px' }) }}
+                {{ forms.colorField({ label: "Border colour"|t('blaster'), id: 'theme-borderColor', name: 'theme[borderColor]', value: theme.borderColor, errors: bar.getErrors('theme.borderColor') }) }}
+            </div>
+
+            {{ forms.lightswitchField({ label: "Drop shadow"|t('blaster'), id: 'theme-shadow', name: 'theme[shadow]', on: theme.shadow }) }}
+
+            {{ forms.textareaField({
+                label: "Custom CSS"|t('blaster'),
+                instructions: "Written straight into the bar’s stylesheet. `{selector}` is replaced with this bar’s own selector, which is how to scope a rule to it."|t('blaster'),
+                id: 'theme-customCss',
+                name: 'theme[customCss]',
+                value: theme.customCss,
+                rows: 5,
+                class: 'code',
+            }) }}
+        </div>
+
+        {# ------------------------------------------------------------------ display #}
+        <div id="barDisplay" class="hidden">
+            {{ forms.selectField({
+                label: "Show it"|t('blaster'),
+                id: 'display-trigger',
+                name: 'display[trigger]',
+                options: [
+                    { label: "Straight away"|t('blaster'), value: 'immediate' },
+                    { label: "After a delay"|t('blaster'), value: 'delay' },
+                    { label: "After scrolling"|t('blaster'), value: 'scroll' },
+                    { label: "When the visitor looks like leaving"|t('blaster'), value: 'exit' },
+                ],
+                value: display.trigger,
+            }) }}
+
+            <div data-when="display[trigger]" data-is="delay">
+                {{ forms.textField({ label: "Wait"|t('blaster'), id: 'display-delaySeconds', name: 'display[delaySeconds]', value: display.delaySeconds, type: 'number', size: 5, unit: "seconds"|t('blaster') }) }}
+            </div>
+
+            <div data-when="display[trigger]" data-is="scroll">
+                {{ forms.textField({ label: "Scrolled past"|t('blaster'), id: 'display-scrollPercent', name: 'display[scrollPercent]', value: display.scrollPercent, type: 'number', size: 5, unit: '%', errors: bar.getErrors('display.scrollPercent') }) }}
+            </div>
+
+            <div data-when="display[trigger]" data-is="exit">
+                <p class="light">{{ "Exit intent needs a mouse pointer to leave the page, which touch devices do not have. Visitors on a phone or tablet see the bar after eight seconds instead of never."|t('blaster') }}</p>
+            </div>
+
+            <hr>
+
+            {{ forms.selectField({
+                label: "Animation"|t('blaster'),
+                id: 'display-animation',
+                name: 'display[animation]',
+                options: [
+                    { label: "Slide"|t('blaster'), value: 'slide' },
+                    { label: "Fade"|t('blaster'), value: 'fade' },
+                    { label: "None"|t('blaster'), value: 'none' },
+                ],
+                value: display.animation,
+            }) }}
+
+            <div data-when="display[animation]" data-is="none" data-not>
+                {{ forms.textField({ label: "Animation length"|t('blaster'), id: 'display-animationDuration', name: 'display[animationDuration]', value: display.animationDuration, type: 'number', size: 6, unit: 'ms' }) }}
+            </div>
+
+            <hr>
+
+            {{ forms.lightswitchField({
+                label: "Stay put while scrolling"|t('blaster'),
+                instructions: "Pins the bar to the edge of the window. Turned off, it sits at the top of the page and scrolls away with it."|t('blaster'),
+                id: 'display-sticky',
+                name: 'display[sticky]',
+                on: display.sticky,
+            }) }}
+
+            <div data-when="display[sticky]" data-is="1">
+                {{ forms.lightswitchField({
+                    label: "Push the page down"|t('blaster'),
+                    instructions: "Rather than covering the top of it."|t('blaster'),
+                    id: 'display-pushPage',
+                    name: 'display[pushPage]',
+                    on: display.pushPage,
+                }) }}
+            </div>
+
+            <hr>
+
+            {{ forms.textField({
+                label: "Close by itself after"|t('blaster'),
+                instructions: "`0` leaves it up until the visitor closes it."|t('blaster'),
+                id: 'display-autoCloseSeconds',
+                name: 'display[autoCloseSeconds]',
+                value: display.autoCloseSeconds,
+                type: 'number',
+                size: 5,
+                unit: "seconds"|t('blaster'),
+            }) }}
+
+            {{ forms.lightswitchField({
+                label: "Let visitors close it"|t('blaster'),
+                id: 'display-dismissible',
+                name: 'display[dismissible]',
+                on: display.dismissible,
+            }) }}
+
+            <div data-when="display[dismissible]" data-is="1">
+                {{ forms.textField({
+                    label: "Stay closed for"|t('blaster'),
+                    instructions: "`0` brings it back on the visitor’s next visit. Editing this bar brings it back for everyone, whatever this says."|t('blaster'),
+                    id: 'display-dismissDays',
+                    name: 'display[dismissDays]',
+                    value: display.dismissDays,
+                    type: 'number',
+                    size: 5,
+                    unit: "days"|t('blaster'),
+                }) }}
+
+                {{ forms.lightswitchField({
+                    label: "Leave a tab to reopen it"|t('blaster'),
+                    id: 'display-showReopenTab',
+                    name: 'display[showReopenTab]',
+                    on: display.showReopenTab,
+                    errors: bar.getErrors('display.showReopenTab'),
+                }) }}
+            </div>
+
+            {{ forms.textField({
+                label: "Show at most"|t('blaster'),
+                instructions: "Times one visitor sees it before it stops appearing. `0` is no limit."|t('blaster'),
+                id: 'display-maxViews',
+                name: 'display[maxViews]',
+                value: display.maxViews,
+                type: 'number',
+                size: 5,
+                unit: "times"|t('blaster'),
+            }) }}
+        </div>
+
+        {# ------------------------------------------------------------------ targeting #}
+        <div id="barTargeting" class="hidden">
+            {{ forms.selectField({
+                label: "Pages"|t('blaster'),
+                id: 'targeting-pages',
+                name: 'targeting[pages]',
+                options: [
+                    { label: "Every page"|t('blaster'), value: 'all' },
+                    { label: "The homepage only"|t('blaster'), value: 'home' },
+                    { label: "Pages matching a URI rule"|t('blaster'), value: 'uris' },
+                    { label: "Particular sections or entries"|t('blaster'), value: 'elements' },
+                ],
+                value: targeting.pages,
+            }) }}
+
+            <div data-when="targeting[pages]" data-is="uris">
+                {{ forms.editableTableField({
+                    label: "URI rules"|t('blaster'),
+                    instructions: "`*` is a wildcard; start a pattern with `re:` for a regular expression; leave one blank to mean the homepage. An exclusion always wins, whatever order the rules are in."|t('blaster'),
+                    id: 'targeting-uriRules',
+                    name: 'targeting[uriRules]',
+                    cols: {
+                        pattern: { type: 'singleline', heading: "Pattern"|t('blaster'), code: true, placeholder: 'blog/*' },
+                        mode: { type: 'select', heading: "Rule"|t('blaster'), options: {
+                            include: "Show here"|t('blaster'),
+                            exclude: "Never here"|t('blaster'),
+                        } },
+                    },
+                    rows: targeting.uriRules,
+                    addRowLabel: "Add a rule"|t('blaster'),
+                    allowAdd: true,
+                    allowDelete: true,
+                    allowReorder: true,
+                    errors: bar.getErrors('targeting.uriRules'),
+                }) }}
+            </div>
+
+            <div data-when="targeting[pages]" data-is="elements">
+                {{ forms.checkboxSelectField({
+                    label: "Sections"|t('blaster'),
+                    id: 'targeting-sectionUids',
+                    name: 'targeting[sectionUids]',
+                    options: sectionOptions,
+                    values: targeting.sectionUids,
+                    errors: bar.getErrors('targeting.sectionUids'),
+                }) }}
+
+                {{ forms.elementSelectField({
+                    label: "Entries"|t('blaster'),
+                    instructions: "Named individually, in addition to any sections above."|t('blaster'),
+                    id: 'targeting-entryIds',
+                    name: 'targeting[entryIds]',
+                    elementType: 'craft\\elements\\Entry',
+                    elements: targeting.entryIds ? craft.entries().id(targeting.entryIds).siteId(site.id).status(null).all() : [],
+                    limit: null,
+                    selectionLabel: "Choose entries"|t('blaster'),
+                }) }}
+            </div>
+
+            <hr>
+
+            {{ forms.selectField({
+                label: "Visitors"|t('blaster'),
+                id: 'targeting-auth',
+                name: 'targeting[auth]',
+                options: [
+                    { label: "Everyone"|t('blaster'), value: 'any' },
+                    { label: "Signed-out visitors only"|t('blaster'), value: 'guests' },
+                    { label: "Signed-in users only"|t('blaster'), value: 'members' },
+                ],
+                value: targeting.auth,
+            }) }}
+
+            <div data-when="targeting[auth]" data-is="members">
+                {{ forms.checkboxSelectField({
+                    label: "User groups"|t('blaster'),
+                    instructions: "Leave every box clear for any signed-in user."|t('blaster'),
+                    id: 'targeting-userGroupUids',
+                    name: 'targeting[userGroupUids]',
+                    options: userGroupOptions,
+                    values: targeting.userGroupUids,
+                }) }}
+            </div>
+
+            {% if siteOptions|length > 1 %}
+                {{ forms.checkboxSelectField({
+                    label: "Sites"|t('blaster'),
+                    instructions: "Leave every box clear to allow all of them."|t('blaster'),
+                    id: 'targeting-siteUids',
+                    name: 'targeting[siteUids]',
+                    options: siteOptions,
+                    values: targeting.siteUids,
+                }) }}
+            {% endif %}
+
+            {{ forms.editableTableField({
+                label: "Query string"|t('blaster'),
+                instructions: "Every rule must hold. Leave a value blank to test only that the parameter is there — which is usually what a campaign tag wants."|t('blaster'),
+                id: 'targeting-queryParams',
+                name: 'targeting[queryParams]',
+                cols: {
+                    name: { type: 'singleline', heading: "Parameter"|t('blaster'), code: true, placeholder: 'utm_campaign' },
+                    value: { type: 'singleline', heading: "Value"|t('blaster'), code: true, placeholder: "Any"|t('blaster') },
+                },
+                rows: targeting.queryParams,
+                addRowLabel: "Add a rule"|t('blaster'),
+                allowAdd: true,
+                allowDelete: true,
+                allowReorder: true,
+            }) }}
+
+            <hr>
+
+            <h2>{{ "Decided in the browser"|t('blaster') }}</h2>
+            <p class="light">
+                {{ "These are worked out by the visitor’s own browser rather than by the server, so they keep working on cached pages and nothing about the visitor is ever recorded."|t('blaster') }}
+            </p>
+
+            {{ forms.checkboxSelectField({
+                label: "Devices"|t('blaster'),
+                id: 'targeting-devices',
+                name: 'targeting[devices]',
+                options: [
+                    { label: "Desktop"|t('blaster'), value: 'desktop' },
+                    { label: "Tablet"|t('blaster'), value: 'tablet' },
+                    { label: "Phone"|t('blaster'), value: 'mobile' },
+                ],
+                values: targeting.devices,
+            }) }}
+
+            <div class="flex">
+                {{ forms.textField({ label: "Phone up to"|t('blaster'), id: 'targeting-mobileMaxWidth', name: 'targeting[mobileMaxWidth]', value: targeting.mobileMaxWidth, type: 'number', size: 6, unit: 'px', errors: bar.getErrors('targeting.mobileMaxWidth') }) }}
+                {{ forms.textField({ label: "Tablet up to"|t('blaster'), id: 'targeting-tabletMaxWidth', name: 'targeting[tabletMaxWidth]', value: targeting.tabletMaxWidth, type: 'number', size: 6, unit: 'px', errors: bar.getErrors('targeting.tabletMaxWidth') }) }}
+            </div>
+
+            {{ forms.selectField({
+                label: "Visit"|t('blaster'),
+                id: 'targeting-visitor',
+                name: 'targeting[visitor]',
+                options: [
+                    { label: "Any visit"|t('blaster'), value: 'any' },
+                    { label: "First visit only"|t('blaster'), value: 'first' },
+                    { label: "Returning visitors only"|t('blaster'), value: 'returning' },
+                ],
+                value: targeting.visitor,
+            }) }}
+
+            {{ forms.selectField({
+                label: "Where they came from"|t('blaster'),
+                id: 'targeting-referrer',
+                name: 'targeting[referrer]',
+                options: [
+                    { label: "Anywhere"|t('blaster'), value: 'any' },
+                    { label: "Typed or bookmarked"|t('blaster'), value: 'direct' },
+                    { label: "A search engine"|t('blaster'), value: 'search' },
+                    { label: "Any other site"|t('blaster'), value: 'external' },
+                    { label: "Particular domains"|t('blaster'), value: 'domains' },
+                ],
+                value: targeting.referrer,
+            }) }}
+
+            <div data-when="targeting[referrer]" data-is="domains">
+                {{ forms.editableTableField({
+                    label: "Domains"|t('blaster'),
+                    instructions: "Subdomains match too, so `example.com` also matches `news.example.com`."|t('blaster'),
+                    id: 'targeting-referrerDomains',
+                    name: 'targeting[referrerDomains]',
+                    cols: { 0: { type: 'singleline', heading: "Domain"|t('blaster'), code: true, placeholder: 'example.com' } },
+                    rows: targeting.referrerDomains|map(d => [d]),
+                    addRowLabel: "Add a domain"|t('blaster'),
+                    allowAdd: true,
+                    allowDelete: true,
+                    allowReorder: true,
+                    errors: bar.getErrors('targeting.referrerDomains'),
+                }) }}
+            </div>
+        </div>
+
+        {# ------------------------------------------------------------------ schedule #}
+        <div id="barSchedule" class="hidden">
+            {{ forms.lightswitchField({
+                label: "Run to a schedule"|t('blaster'),
+                instructions: "Off, the bar runs whenever it is enabled."|t('blaster'),
+                id: 'schedule-enabled',
+                name: 'schedule[enabled]',
+                on: schedule.enabled,
+            }) }}
+
+            <div data-when="schedule[enabled]" data-is="1">
+                {{ forms.dateTimeField({
+                    label: "Start"|t('blaster'),
+                    instructions: "Leave blank to start as soon as it is enabled."|t('blaster'),
+                    id: 'schedule-start',
+                    name: 'schedule[start]',
+                    value: schedule.getStartDate(),
+                    errors: bar.getErrors('schedule.start'),
+                }) }}
+
+                {{ forms.dateTimeField({
+                    label: "End"|t('blaster'),
+                    instructions: "Leave blank to run until it is switched off."|t('blaster'),
+                    id: 'schedule-end',
+                    name: 'schedule[end]',
+                    value: schedule.getEndDate(),
+                    errors: bar.getErrors('schedule.end'),
+                }) }}
+
+                <hr>
+
+                {{ forms.checkboxSelectField({
+                    label: "Days"|t('blaster'),
+                    instructions: "Leave every box clear for every day."|t('blaster'),
+                    id: 'schedule-daysOfWeek',
+                    name: 'schedule[daysOfWeek]',
+                    options: [
+                        { label: "Monday"|t('blaster'), value: '1' },
+                        { label: "Tuesday"|t('blaster'), value: '2' },
+                        { label: "Wednesday"|t('blaster'), value: '3' },
+                        { label: "Thursday"|t('blaster'), value: '4' },
+                        { label: "Friday"|t('blaster'), value: '5' },
+                        { label: "Saturday"|t('blaster'), value: '6' },
+                        { label: "Sunday"|t('blaster'), value: '7' },
+                    ],
+                    values: schedule.daysOfWeek|map(d => d|string),
+                }) }}
+
+                <div class="flex">
+                    {{ forms.timeField({ label: "From"|t('blaster'), id: 'schedule-dailyStart', name: 'schedule[dailyStart]', value: schedule.dailyStart ? now|date_modify('today ' ~ schedule.dailyStart) : null }) }}
+                    {{ forms.timeField({ label: "Until"|t('blaster'), id: 'schedule-dailyEnd', name: 'schedule[dailyEnd]', value: schedule.dailyEnd ? now|date_modify('today ' ~ schedule.dailyEnd) : null, errors: bar.getErrors('schedule.dailyEnd') }) }}
+                </div>
+
+                <p class="light">
+                    {{ "Days and times are read in the site’s time zone, {tz}. An end time earlier than the start time runs overnight."|t('blaster', { tz: craft.app.timeZone }) }}
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block details %}
+    <div class="meta">
+        {{ forms.lightswitchField({
+            label: "Enabled"|t('app'),
+            id: 'enabled',
+            name: 'enabled',
+            on: bar.enabled,
+        }) }}
+
+        {{ forms.textField({
+            label: "Priority"|t('blaster'),
+            instructions: "When several bars match the same page, the highest priority wins the position. Only one bar shows at the top and one at the bottom."|t('blaster'),
+            id: 'priority',
+            name: 'priority',
+            value: bar.priority,
+            type: 'number',
+            size: 5,
+        }) }}
+    </div>
+
+    {% if not isNew %}
+        <div class="meta read-only">
+            <div class="data">
+                <h5 class="heading">{{ "Status"|t('app') }}</h5>
+                <div class="value">
+                    <span class="status {{ bar.status }}"></span>
+                    {{ bar.status|capitalize }}
+                </div>
+            </div>
+            <div class="data">
+                <h5 class="heading">{{ "Shows on"|t('blaster') }}</h5>
+                <div class="value">{{ bar.targetingSummary }}</div>
+            </div>
+            <div class="data">
+                <h5 class="heading">{{ "Runs"|t('blaster') }}</h5>
+                <div class="value">{{ bar.scheduleSummary }}</div>
+            </div>
+        </div>
+
+        {% if stats %}
+            <div class="meta">
+                <div class="blaster-stat-grid">
+                    <div class="blaster-stat">
+                        <div class="blaster-stat__value">{{ stats.views|number(0) }}</div>
+                        <div class="blaster-stat__label">{{ "Views"|t('blaster') }}</div>
+                    </div>
+                    <div class="blaster-stat">
+                        <div class="blaster-stat__value">{{ stats.clicks|number(0) }}</div>
+                        <div class="blaster-stat__label">{{ "Clicks"|t('blaster') }}</div>
+                    </div>
+                    <div class="blaster-stat">
+                        <div class="blaster-stat__value">{{ stats.views ? ((stats.clicks / stats.views) * 100)|number(1) ~ '%' : '—' }}</div>
+                        <div class="blaster-stat__label">{{ "CTR"|t('blaster') }}</div>
+                    </div>
+                </div>
+
+                {% set peak = series ? max(series|map(d => d.views)) : 0 %}
+                {% if peak > 0 %}
+                    <div class="blaster-sparkline" title="{{ 'Views over the last 30 days'|t('blaster') }}">
+                        {% for day in series %}
+                            <span style="height: {{ (day.views / peak * 100)|round }}%" title="{{ day.date }}: {{ day.views }}"></span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="meta">
+            <div class="field">
+                {% if canManage %}
+                    <button type="button" id="blaster-duplicate" class="btn" data-bar-id="{{ bar.id }}">{{ "Duplicate"|t('app') }}</button>
+                {% endif %}
+                {% if canDelete %}
+                    <button type="button" id="blaster-delete" class="btn delete"
+                            data-bar-id="{{ bar.id }}"
+                            data-confirm="{{ 'Delete this bar? Its view and click counts go with it.'|t('blaster') }}">{{ "Delete"|t('app') }}</button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,86 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.lightswitchField({
+    label: "Add bars automatically"|t('blaster'),
+    instructions: "Splice matching bars into front-end HTML pages, just before `</body>`. Turn this off to place bars yourself with `{{ craft.blaster.render() }}` — though calling that tag already stands injection down for the page it runs on."|t('blaster'),
+    id: 'autoInject',
+    name: 'autoInject',
+    on: settings.autoInject,
+}) }}
+
+{{ forms.editableTableField({
+    label: "Never add bars to"|t('blaster'),
+    instructions: "URI patterns that never receive a bar, whatever a bar’s own targeting says. Use `*` as a wildcard, or start with `re:` for a regular expression. Useful for HTML that is not really a page — an embed, a printable view, a fragment endpoint."|t('blaster'),
+    id: 'excludedUris',
+    name: 'excludedUris',
+    cols: {
+        pattern: {
+            type: 'singleline',
+            heading: "URI pattern"|t('blaster'),
+            placeholder: 'embeds/*',
+            code: true,
+        },
+    },
+    rows: settings.excludedUris|map(p => { pattern: p }),
+    addRowLabel: "Add a pattern"|t('blaster'),
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: true,
+    errors: settings.getErrors('excludedUris'),
+}) }}
+
+{{ forms.textField({
+    label: "Stacking order"|t('blaster'),
+    instructions: "The `z-index` bars sit at. Raise it if a sticky header on the site covers them."|t('blaster'),
+    id: 'zIndex',
+    name: 'zIndex',
+    value: settings.zIndex,
+    size: 8,
+    type: 'number',
+    errors: settings.getErrors('zIndex'),
+}) }}
+
+<hr>
+
+<h2>{{ "Counting"|t('blaster') }}</h2>
+
+<p class="light">
+    {{ "Blaster records three numbers per bar, per site, per day: views, clicks and dismissals. It stores no visitor identifier, no address and no session, so the numbers can answer “how many times” but never “how many people”."|t('blaster') }}
+</p>
+
+{{ forms.lightswitchField({
+    label: "Count views and clicks"|t('blaster'),
+    id: 'trackStats',
+    name: 'trackStats',
+    on: settings.trackStats,
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Honour Do Not Track"|t('blaster'),
+    instructions: "Skip counting for visitors sending `DNT: 1`. Off by default, because the counters hold nothing that identifies anyone — switch it on if your site’s policy is stricter than that, and expect the numbers to fall accordingly."|t('blaster'),
+    id: 'respectDoNotTrack',
+    name: 'respectDoNotTrack',
+    on: settings.respectDoNotTrack,
+}) }}
+
+{{ forms.textField({
+    label: "Keep counts for"|t('blaster'),
+    instructions: "Days of daily counts to keep. `0` keeps everything. Old rows are removed by Craft’s garbage collection, or by `craft blaster/stats/prune`."|t('blaster'),
+    id: 'statsRetentionDays',
+    name: 'statsRetentionDays',
+    value: settings.statsRetentionDays,
+    size: 8,
+    type: 'number',
+    errors: settings.getErrors('statsRetentionDays'),
+}) }}
+
+<hr>
+
+{{ forms.selectField({
+    label: "HTML Purifier config"|t('blaster'),
+    instructions: "Which `config/htmlpurifier/*.json` file to clean bar messages with. Cleaning happens once, on save."|t('blaster'),
+    id: 'purifierConfig',
+    name: 'purifierConfig',
+    options: purifierConfigs,
+    value: settings.purifierConfig,
+}) }}

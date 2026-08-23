@@ -1,0 +1,10 @@
+{% extends "_layouts/elementindex" %}
+
+{% set title = "Bars"|t('blaster') %}
+{% set elementType = 'justinholtweb\\blaster\\elements\\Bar' %}
+
+{% block actionButton %}
+    {% if canManage %}
+        <a href="{{ url('blaster/bars/new') }}" class="btn submit add icon">{{ "New bar"|t('blaster') }}</a>
+    {% endif %}
+{% endblock %}

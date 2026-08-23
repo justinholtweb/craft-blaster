@@ -1,0 +1,55 @@
+{
+    "name": "justinholtweb/craft-blaster",
+    "description": "Notification bars for Craft CMS — announce, promote and warn with targeted, scheduled bars that need no template changes.",
+    "version": "5.0.0",
+    "type": "craft-plugin",
+    "keywords": [
+        "craftcms",
+        "craft-plugin",
+        "notification",
+        "notification-bar",
+        "announcement",
+        "banner",
+        "hello-bar",
+        "cta"
+    ],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Justin Holt",
+            "homepage": "https://justinholt.com"
+        }
+    ],
+    "support": {
+        "email": "justin@justinholt.com",
+        "issues": "https://github.com/justinholtweb/craft-blaster/issues",
+        "source": "https://github.com/justinholtweb/craft-blaster"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.2",
+        "ext-json": "*",
+        "craftcms/cms": "^5.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "justinholtweb\\blaster\\": "src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "craftcms/plugin-installer": true,
+            "yiisoft/yii2-composer": true
+        }
+    },
+    "extra": {
+        "name": "Blaster",
+        "handle": "blaster",
+        "developer": "Justin Holt",
+        "developerUrl": "https://justinholt.com",
+        "documentationUrl": "https://justinholt.com/plugins/craft-blaster/docs",
+        "changelogUrl": "https://raw.githubusercontent.com/justinholtweb/craft-blaster/main/CHANGELOG.md",
+        "class": "justinholtweb\\blaster\\Plugin"
+    }
+}
