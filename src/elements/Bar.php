@@ -10,6 +10,7 @@ use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Db;
 use craft\helpers\Html;
 use craft\helpers\UrlHelper;
+use craft\enums\Color;
 use DateTime;
 use DateTimeZone;
 use justinholtweb\blaster\elements\db\BarQuery;
@@ -126,10 +127,10 @@ class Bar extends Element
     public static function statuses(): array
     {
         return [
-            self::STATUS_LIVE => ['label' => Craft::t('blaster', 'Live'), 'color' => 'green'],
-            self::STATUS_PENDING => ['label' => Craft::t('blaster', 'Pending'), 'color' => 'orange'],
-            self::STATUS_EXPIRED => ['label' => Craft::t('blaster', 'Expired'), 'color' => 'red'],
-            self::STATUS_DISABLED => ['label' => Craft::t('blaster', 'Disabled'), 'color' => 'gray'],
+            self::STATUS_LIVE => ['label' => Craft::t('blaster', 'Live'), 'color' => Color::Green],
+            self::STATUS_PENDING => ['label' => Craft::t('blaster', 'Pending'), 'color' => Color::Orange],
+            self::STATUS_EXPIRED => ['label' => Craft::t('blaster', 'Expired'), 'color' => Color::Red],
+            self::STATUS_DISABLED => ['label' => Craft::t('blaster', 'Disabled'), 'color' => Color::Gray],
         ];
     }
 

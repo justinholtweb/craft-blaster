@@ -1,5 +1,11 @@
 # Release Notes for Blaster
 
+## 5.0.1 - 2026-08-26
+
+### Fixed
+
+- **The bars index returned HTTP 500 whenever the status column was shown.** Craft 5 expects `statuses()` to return `craft\enums\Color` cases; the string colours this plugin returned made `Cp::componentStatusLabelHtml()` fail with "Attempt to read property `value` on string". The index then showed no rows at all, because the failed Ajax call simply never replaced the table.
+
 ## 5.0.0
 
 Initial release.

@@ -1,7 +1,7 @@
 {
     "name": "justinholtweb/craft-blaster",
     "description": "Notification bars for Craft CMS — announce, promote and warn with targeted, scheduled bars that need no template changes.",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "type": "craft-plugin",
     "keywords": [
         "craftcms",
