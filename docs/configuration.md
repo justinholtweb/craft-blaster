@@ -81,6 +81,9 @@ should switch it on and accept losing the corresponding share of their numbers.
 
 **Default: 730 days.** `0` keeps everything.
 
+Only live bars are counted, and one IP address can add at most 60 counts a minute — far more than a
+real visitor sends, but enough to stop a script inflating a bar's numbers.
+
 Daily rows older than this are pruned during Craft's own garbage collection, and by
 `php craft blaster/stats/prune`. Two years is enough to compare this year's Black Friday bar with
 last year's, which is the only reason to keep a daily row that old.
@@ -93,10 +96,12 @@ The name of a `config/htmlpurifier/*.json` file used to clean bar messages on sa
 rich text, so it goes through HTML Purifier exactly like a Redactor or CKEditor field does — the
 setting is here so a bar's message can be allowed markup the rest of the site is not, or less.
 
-Per-bar **custom CSS** is a separate matter and does not go through Purifier at all. Only a literal
-`</style` is stripped from it, and that is stripped on the way *out* rather than on save, because
-stored data can also arrive from a project config sync or a restored backup. Everything else in
-custom CSS is passed through, which is why the permission to edit bars is a trusted one.
+Per-bar **custom CSS** is a separate matter and does not go through Purifier at all. It may not
+contain a `<` — CSS never needs one, and it is the only way CSS written into a `<style>` element can
+become markup. A bar with one is refused on save with an error on the field; if you need a `<`
+inside a `content` string, write it as `\3C`. Any `<` that arrives some other way, such as a project
+config sync or a restored backup, is removed on the way *out*. Everything else in custom CSS is
+passed through, which is why the permission to edit bars is a trusted one.
 
 ## config/blaster.php
 

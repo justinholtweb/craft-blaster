@@ -209,6 +209,32 @@ check('custom CSS cannot break out of its style element', function() {
     return !str_contains(strtolower($css), '</style') ?: $css;
 });
 
+check('a nested </style> cannot be rebuilt by the filter itself', function() {
+    // Removing `</style` once turned `</st</styleyle>` into a working `</style>`: stored XSS for
+    // every visitor, and in the CP preview for any admin who opened the bar. Up to 5.0.1.
+    foreach ([
+        '</st</styleyle><img src=x onerror=alert(1)>',
+        '<</style/style><script>alert(1)</script>',
+        'a{} </STYLE ><svg onload=alert(1)>',
+    ] as $payload) {
+        $css = BarTheme::fromArray(['customCss' => $payload])->toCss('#bar');
+
+        if (str_contains($css, '<')) {
+            return "a '<' survived: $css";
+        }
+    }
+
+    return true;
+});
+
+check('custom CSS containing < is refused on save, and ordinary CSS is not', function() {
+    $bad = BarTheme::fromArray(['customCss' => '{selector}{color:red} </style>']);
+    $good = BarTheme::fromArray(['customCss' => '{selector} a:hover{content:"\\3C";color:#fff}']);
+
+    return !$bad->validate() && $bad->hasErrors('customCss') && $good->validate()
+        ?: json_encode([$bad->getErrors(), $good->getErrors()]);
+});
+
 // ---------------------------------------------------------------------------- matching
 
 section('URI matching');

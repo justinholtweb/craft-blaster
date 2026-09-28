@@ -112,9 +112,13 @@ sites is worse than one that asks for a template change.
   form), so `new FormData(wrapper)` throws — build it from `wrapper.closest('form')`, and
   `delete` the `action` and `redirect` entries or the preview posts itself into the save action
   and follows the redirect.
-- **Custom CSS only needs one thing stripped: a literal `</style`.** That is not styling, it is an
-  escape from the element the CSS lives in. Colours and numbers are sanitised **on the way out**,
-  not the way in, because stored data can arrive from a project-config sync or a restored backup.
+- **Stripping `</style` from custom CSS is not enough — it was a stored XSS until 5.0.2.** One
+  pass of `preg_replace` turns `</st</styleyle>` into a working `</style>`. CSS never needs a `<`,
+  so `BarTheme` refuses any on save and `safeCustomCss()` removes every one on the way out. Colours
+  and numbers are also sanitised **on the way out**, because stored data can arrive from a
+  project-config sync or a restored backup.
+- **`Stats::totalsForBar()` without a site ID is memoized for the process.** A test that reads it,
+  posts hits and reads it again sees no change; pass the site ID.
 - A **soft-deleted bar keeps its row**, so the handle index is not unique and `handleIsTaken()`
   asks an element query. `afterDelete()` parks the handle as `handle--trashed-<id>`;
   `afterRestore()` claims it back, or a variation.
@@ -227,7 +231,8 @@ No local PHP on this Mac. Everything runs inside the plugin-testing container:
 
 ```sh
 cd ~/Sites/plugin-testing
-ddev exec php /var/www/craft-blaster/tests/integration/checks.php    # 78 checks
+ddev exec php /var/www/craft-blaster/tests/integration/checks.php    # 80 checks
+ddev exec php /var/www/craft-blaster/tests/integration/trust.php     # 3 checks, the stats endpoint over HTTP
 ddev exec bash -c 'find /var/www/craft-blaster/src -name "*.php" -print0 | xargs -0 -n1 php -l'
 ```
 

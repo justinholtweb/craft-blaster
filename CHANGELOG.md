@@ -1,5 +1,19 @@
 # Release Notes for Blaster
 
+## 5.0.2 - 2026-09-28
+
+### Security
+
+- Fixed a stored cross-site scripting vulnerability in custom CSS. Only a literal `</style` was
+  removed, and only once, so `</st</styleyle>` rebuilt it — letting a user with the bar permission
+  run script for every visitor, and in the control panel preview for any admin who opened the bar.
+  Custom CSS may no longer contain a `<` at all: it is refused on save, and removed on output from
+  anything already stored.
+
+### Changed
+
+- The stats endpoint only counts live bars, and counts at most 60 hits a minute from one IP address.
+
 ## 5.0.1 - 2026-08-26
 
 ### Fixed

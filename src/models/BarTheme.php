@@ -111,6 +111,11 @@ class BarTheme extends ConfigModel
             [['fontSize'], 'integer', 'min' => 8, 'max' => 72],
             [['maxWidth'], 'integer', 'min' => 200, 'max' => 4000],
             [['shadow'], 'boolean'],
+            [['customCss'], 'match',
+                'pattern' => '/</',
+                'not' => true,
+                'message' => Craft::t('blaster', 'Custom CSS can’t contain “<”. Use `\\3C` if you need one inside a string.'),
+            ],
         ];
     }
 
@@ -190,10 +195,14 @@ class BarTheme extends ConfigModel
     }
 
     /**
-     * Custom CSS with `{selector}` resolved.
+     * Custom CSS with `{selector}` resolved, and every `<` removed.
      *
-     * The only thing removed is a literal `</style`, which is not styling — it is an escape from
-     * the element the CSS lives in, and the one way hand-written CSS can become markup.
+     * The CSS is written into a `<style>` element, and `</style` is the one way hand-written CSS
+     * can become markup. Removing only that sequence is not enough: done once, `</st</styleyle>`
+     * rebuilds it from the pieces either side. CSS never needs a literal `<` (a string can use
+     * `\3C`), so none survives — which leaves nothing to build a tag from, however it is nested.
+     * {@see defineRules()} refuses one on save, so an author is told rather than silently edited;
+     * this is the backstop for anything stored before that rule existed.
      */
     public function safeCustomCss(string $selector): string
     {
@@ -205,7 +214,7 @@ class BarTheme extends ConfigModel
 
         $css = str_replace('{selector}', $selector, $css);
 
-        return preg_replace('/<\s*\/\s*style/i', '', $css);
+        return str_replace('<', '', $css);
     }
 
     public function toArray(array $fields = [], array $expand = [], $recursive = true): array
